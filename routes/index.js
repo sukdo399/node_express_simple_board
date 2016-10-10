@@ -20,7 +20,7 @@ router.get('/write', function(req, res, next) {
 });
 
 router.post('/write', function(req, res, next){
-	console.log('req.body=', req.body);
+	// console.log('req.body=', req.body);
 
 	var writer = req.body.writer;
 	var pwd = req.body.pwd;
@@ -33,7 +33,7 @@ router.post('/write', function(req, res, next){
 	pool.getConnection(function(err, conn){
 		if(err) { next(err); return; }
 
-		console.log('conn=', conn);
+		// console.log('conn=', conn);
 		conn.query(sql, data, function(err, row){
 			if(err) { next(err); return; }
 
@@ -51,7 +51,7 @@ router.get('/list', function(req, res, next) {
 router.get('/list/:page', function(req, res, next) {
 	var page = req.params.page;
 	page = parseInt(page, 10);
-	console.log('page= ', page);
+	// console.log('page= ', page);
 	var size = 10; // 10개 글
 	var begin = (page-1) * size;
 	pool.getConnection(function(err, conn){
@@ -61,7 +61,7 @@ router.get('/list/:page', function(req, res, next) {
 				conn.release();
 				return next(err);
 			}
-			console.log('rows= ', rows);
+			// console.log('rows= ', rows);
 			var cnt = rows[0].cnt;
 			var totalPage = Math.ceil(cnt/size);
 			var pageSize = 10;
@@ -80,7 +80,7 @@ router.get('/list/:page', function(req, res, next) {
 					conn.release();
 					return next(err);
 				}
-				console.log('리스트= ', rows);
+				// console.log('리스트= ', rows);
 				var datas = {
 					title: '게시판 리스트',
 					data: rows,
@@ -91,7 +91,7 @@ router.get('/list/:page', function(req, res, next) {
 					totalPage: totalPage,
 					max: max
 				};
-				console.log('datas=', datas);
+				// console.log('datas=', datas);
 				conn.release();
 				// res.json({datas: datas});
 				res.render('list', datas);
@@ -106,7 +106,7 @@ router.get('/write300', function(req, res, next){
 	var sql = 'insert into board(writer, title, content, pwd, hit, regdate) values (?, ?, ?, ?, 0, now())';
 
 	pool.getConnection(function(err, conn){
-		console.log('conn=', conn);
+		// console.log('conn=', conn);
 		for (var i=1; i<=300; i++)
 		{
 			var data = ['타잔' + i, '제목' + i, '내용' + i, '1234'];
@@ -119,4 +119,93 @@ router.get('/write300', function(req, res, next){
 	res.send("<script> alert('save success!');</script>")
 });
 
+router.get('/read/:num/:page', function(req, res, next){
+	var num = req.params.num;
+	var page = req.params.page;
+
+	pool.getConnection(function(err, conn){
+		if(err) {
+			return next(err);
+		}
+		conn.query('update board set hit=hit+1 where num=?', [num], function(err, row){
+			if(err) {
+				conn.release();
+				return next(err);
+			}
+			// console.log('row=', row);
+
+			conn.query('select * from board where num=?', [num], function(err, rows){
+				if(err) {
+					conn.release();
+					return next(err);
+				}
+				conn.release();
+				res.render('read', {title: '게시판 읽기', data: rows[0], page: page});
+			});
+			// res.json({status:"OK"});
+		});
+	});
+});
+
+router.get('/update/:num/:page', function(req, res, next) {
+	var num = req.params.num;
+	var page = req.params.page;
+
+	pool.getConnection(function(err, conn) {
+		if(err) {
+			return next(err);
+		}
+		// TODO: do not use *
+		conn.query('select * from board where num=?', [num], function(err, rows) {
+			if(err) {
+				conn.release();
+				return next(err);
+			}
+			conn.release();
+			res.render('updateform', {title: '게시판 수정', data: rows[0], page: page});
+		});
+	});
+});
+
+router.post('/update', function(req, res, next) {
+	// console.log('update=', req.body);
+	var num = req.body.num;
+	var page = req.body.page;
+	var writer = req.body.writer;
+	var pwd = req.body.pwd;
+	var title = req.body.title;
+	var content = req.body.content;
+
+	pool.getConnection(function(err, conn) {
+		if(err) {
+			return next(err);
+		}
+		conn.query('update board set writer=?, title=?, content=? where num=? and pwd=?', [writer, title, content, num, pwd], function(err, row) {
+			if(err) {
+				conn.release();
+				return next(err);
+			}
+			conn.release();
+			// console.log('row=', row);
+			if(row.affectedRows == 1) {
+				res.redirect('/list/' + page);
+			} else {
+				res.send('<script> alert("비밀번호가 틀려서 되돌아갑니다!!!"); history.back(); </script>')
+			}
+		});
+	});
+	// res.json({status: "OK"});
+});
+
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+

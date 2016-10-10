@@ -6,3 +6,7 @@ body {
 a {
   color: #00B7FF;
 }
+
+table { width:46em; padding-top:0.3em }
+th { background: #D6D6D6; }
+td { border: 1px doted; }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script>
+    function modify() {
+      // alert('modify');
+      location.href = '/update/<%=data.num%>/<%=page%>'
+    }
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/list/<%=page%>">리스트</a>
+    <table>
+      <tr>
+        <th>글번호</th>
+        <td><%=data.num%></td>
+      </tr>
+      <tr>
+        <th>글쓴이</th>
+        <td><%=data.writer%></td>
+      </tr>
+      <tr>
+        <th>조회수</th>
+        <td><%=data.hit%></td>
+      </tr>
+      <tr>
+        <th>제목</th>
+        <td><%=data.title%></td>
+      </tr>
+      <tr>
+        <th>내용</th>
+        <td><%=data.content%></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="button" value="수정" onclick="modify()">
+          <input type="button" value="삭제" onclick="delview()">
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -4,11 +4,6 @@
     <meta charset="utf-8">
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <style>
-      table { width:46em; padding-top:0.3em }
-      th { background: #D6D6D6; }
-      td { border: 1px doted; }
-    </style>
   </head>
   <body>
     <h1><%= title %></h1>
@@ -24,7 +19,7 @@
       <% for(var i = 0; i < data.length; i++) { %>
         <tr>
           <td> <%=max-i%> </td>
-          <td> <%=data[i].title%> </td>
+          <td> <a href="/read/<%=data[i].num%>/<%=page%>"> <%=data[i].title%> </a></td>
           <td> <%=data[i].writer%> </td>
           <td> <%=data[i].regdate%> </td>
           <td> <%=data[i].hit%> </td>
