@@ -5,9 +5,9 @@ var mysql = require('mysql');
 var pool  = mysql.createPool({
 	connectionLimit : 100,
 	host            : '127.0.0.1',
-	user            : 'root',
-	password        : '1234',
-	database        : 'mysql'
+	user            : 'mysql',
+	password        : '',
+	database        : 'test'
 });
 
 /* GET home page. */
@@ -196,6 +196,34 @@ router.post('/update', function(req, res, next) {
 	});
 	// res.json({status: "OK"});
 });
+
+router.post('/delete', function(req, res, next) {
+	// console.log('delete=', req.body);
+	var num = req.body.num;
+	var page = req.body.page;
+	var pwd = req.body.pwd;
+
+	pool.getConnection(function(err, conn) {
+		if(err) {
+			return next(err);
+		}
+		conn.query('delete from board where num=? and pwd=?', [num, pwd], function(err, row) {
+			if(err) {
+				conn.release();
+				return next(err);
+			}
+			conn.release();
+			// console.log('row=', row);
+			if(row.affectedRows == 1) {
+				res.redirect('/list/' + page);
+			} else {
+				res.send('<script> alert("비밀번호가 틀려서 되돌아갑니다!!!"); history.back(); </script>')
+			}
+		});
+	});
+	// res.json({status: "OK"});
+});
+
 
 module.exports = router;
 

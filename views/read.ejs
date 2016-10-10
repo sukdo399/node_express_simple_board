@@ -6,8 +6,23 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script>
     function modify() {
-      // alert('modify');
       location.href = '/update/<%=data.num%>/<%=page%>'
+    }
+    function delview() {
+      document.getElementById('frm1').style.display='inline';
+      document.getElementById('span1').style.visibility='hidden';
+    }
+    function del() {
+      if(document.getElementById('pwd').value == '') {
+        alert("비밀번호를 입력하세요.");
+        document.getElementById('pwd').focus();
+        return;
+      }
+      document.frm1.submit();
+    }
+    function cancel() {
+      document.getElementById('frm1').style.display='none';
+      document.getElementById('span1').style.visibility='';
     }
     </script>
   </head>
@@ -37,8 +52,17 @@
       </tr>
       <tr>
         <td colspan="2">
-          <input type="button" value="수정" onclick="modify()">
-          <input type="button" value="삭제" onclick="delview()">
+          <span id="span1">
+            <input type="button" value="수정" onclick="modify()">
+            <input type="button" value="삭제" onclick="delview()">
+          </span>
+          <form id="frm1", name="frm1" action="/delete" method="post" style="display: inline; display: none">
+            <input type="hidden" name="page" value="<%=page%>">
+            <input type="hidden" name="num" value="<%=data.num%>">
+            비밀번호: <input type="password" id="pwd" name="pwd" size="12" maxlength="12">
+            <input type="button" value="Del" onclick="del()">
+            <input type="button" value="Cancel" onclick="cancel()">
+          </form>
         </td>
       </tr>
     </table>
